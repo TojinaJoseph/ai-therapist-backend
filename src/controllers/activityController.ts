@@ -61,7 +61,6 @@ export const getActivity = async (
   next: NextFunction
 ) => {
   try {
-    console.log("inside today activity sessions");
     const userId = new Types.ObjectId(req.user?.id);
 
     // Find session by sessionId instead of _id

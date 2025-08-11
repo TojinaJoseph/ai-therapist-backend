@@ -12,8 +12,6 @@ export const createMood = async (
   next: NextFunction
 ) => {
   try {
-    console.log("inside mood");
-    console.log(req.body);
     const { score, note, context, activities } = req.body;
     const userId = req.user?._id; // From auth middleware
 
@@ -55,7 +53,6 @@ export const createMood = async (
 
 export const getMood = async (req: Request, res: Response) => {
   try {
-    console.log("inside today activity sessions");
     const userId = new Types.ObjectId(req.user?.id);
 
     // Find session by sessionId instead of _id
@@ -63,7 +60,7 @@ export const getMood = async (req: Request, res: Response) => {
     if (!moodEntries) {
       return res.status(404).json({ message: "Session not found" });
     }
-    console.log(moodEntries);
+
     // if (activities.userId.toString() !== userId.toString()) {
     //   return res.status(403).json({ message: "Unauthorized" });
     // }

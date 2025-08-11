@@ -6,26 +6,25 @@ import jwt from "jsonwebtoken";
 
 export const register = async (req: Request, res: Response) => {
   try {
-    console.log("inside register", req.body);
     const { name, email, password } = req.body;
-    console.log(name, email, password);
+
     if (!name || !email || !password) {
       return res
         .status(400)
         .json({ message: "Name, email, and password are required." });
     }
     // Check if user exists
-    console.log("inside register before hashex");
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(409).json({ message: "Email already in use." });
     }
-    console.log("inside register before hash");
+
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
     // Create user
     const user = new User({ name, email, password: hashedPassword });
-    console.log(user);
+
     await user.save();
     // Respond
     res.status(201).json({

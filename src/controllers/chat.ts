@@ -59,7 +59,6 @@ export const createChatSession = async (req: Request, res: Response) => {
 // Send a message in the chat session
 export const sendMessage = async (req: Request, res: Response) => {
   try {
-    console.log("inside send");
     const { sessionId } = req.params;
     const { message } = req.body;
     const userId = new Types.ObjectId(req.user?.id);

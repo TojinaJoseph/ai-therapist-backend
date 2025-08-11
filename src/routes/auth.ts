@@ -4,8 +4,6 @@ import { auth } from "../middlewares/auth";
 
 const router = Router();
 
-console.log("inside auth");
-
 // POST /auth/register
 router.post("/register", register);
 

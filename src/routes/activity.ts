@@ -4,8 +4,6 @@ import { getActivity, logActivity } from "../controllers/activityController";
 
 const router = express.Router();
 
-console.log("inside route activity");
-
 // All routes are protected with authentication
 router.use(auth);
 

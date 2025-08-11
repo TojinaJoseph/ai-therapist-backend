@@ -238,7 +238,7 @@ export const generateActivityRecommendations = inngest.createFunction(
       const userContext = await step.run("get-user-context", async () => {
         // Here you would typically fetch user's history from your database
         const recentMoods = await Mood.find({ userId: event.data.userId });
-        console.log(event.data);
+
         return {
           recentMoods: recentMoods,
           completedActivities: event.data.completedActivities,

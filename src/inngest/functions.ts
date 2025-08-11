@@ -7,9 +7,7 @@ export const therapySessionHandler = inngest.createFunction(
   { event: "therapy/session.created" },
   async ({ event, step }) => {
     // Log the session creation
-    await step.run("log-session-creation", async () => {
-      console.log("New therapy session created:", event.data);
-    });
+    await step.run("log-session-creation", async () => {});
 
     // Process the session data
     const processedData = await step.run("process-session-data", async () => {
@@ -24,7 +22,6 @@ export const therapySessionHandler = inngest.createFunction(
     if (event.data.requiresFollowUp) {
       await step.run("send-follow-up", async () => {
         // Add notification logic here
-        console.log("Sending follow-up for session:", event.data.sessionId);
       });
     }
 
@@ -42,9 +39,7 @@ export const moodTrackingHandler = inngest.createFunction(
   { event: "mood/updated" },
   async ({ event, step }) => {
     // Log the mood update
-    await step.run("log-mood-update", async () => {
-      console.log("Mood update received:", event.data);
-    });
+    await step.run("log-mood-update", async () => {});
 
     // Analyze mood patterns
     const analysis = await step.run("analyze-mood-patterns", async () => {
@@ -59,7 +54,6 @@ export const moodTrackingHandler = inngest.createFunction(
     if (event.data.mood < 3) {
       // Assuming mood is on a scale of 1-5
       await step.run("trigger-alert", async () => {
-        console.log("Triggering alert for concerning mood:", event.data);
         // Add alert logic here
       });
     }
@@ -77,9 +71,7 @@ export const activityCompletionHandler = inngest.createFunction(
   { event: "activity/completed" },
   async ({ event, step }) => {
     // Log the activity completion
-    await step.run("log-activity-completion", async () => {
-      console.log("Activity completed:", event.data);
-    });
+    await step.run("log-activity-completion", async () => {});
 
     // Update user progress
     const progress = await step.run("update-progress", async () => {

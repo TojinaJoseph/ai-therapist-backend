@@ -36,10 +36,6 @@ app.use(
   serve({ client: inngest, functions: inggestFunctions })
 );
 
-// app.listen(PORT, () => {
-//   console.log(`Server is running on http://localhost:${PORT}`);
-// });
-
 //routes
 app.use("/auth", authRouter);
 app.use("/chat", chatRouter);
