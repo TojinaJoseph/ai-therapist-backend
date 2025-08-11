@@ -23,6 +23,12 @@ app.use(express.json());
 
 //middlewares
 app.use(cors());
+app.use(
+  cors({
+    origin: ["https://ai-therapist-frontend-chi.vercel.app"],
+    credentials: true,
+  })
+);
 
 app.use(helmet());
 
