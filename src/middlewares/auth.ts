@@ -1,0 +1,41 @@
+import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+import { User } from "../models/User";
+
+// Extend Express Request type to include user
+import type { IUser } from "../models/User";
+
+declare module "express-serve-static-core" {
+  interface Request {
+    user?: IUser;
+  }
+}
+
+export const auth = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const token = req.header("Authorization")?.replace("Bearer ", "");
+
+    if (!token) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+
+    interface JwtPayload {
+      userId: string;
+      // add other properties if needed
+    }
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || "your-secret-key"
+    ) as JwtPayload;
+    const user = await User.findById(decoded.userId);
+
+    if (!user) {
+      return res.status(401).json({ message: "User not found" });
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
+    res.status(401).json({ message: "Invalid authentication token" });
+  }
+};

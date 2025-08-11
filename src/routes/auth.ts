@@ -1,0 +1,23 @@
+import { Router } from "express";
+import { register, login, logout } from "../controllers/authController";
+import { auth } from "../middlewares/auth";
+
+const router = Router();
+
+console.log("inside auth");
+
+// POST /auth/register
+router.post("/register", register);
+
+// POST /auth/login
+router.post("/login", login);
+
+// POST /auth/logout
+router.post("/logout", auth, logout);
+
+// GET /auth/me
+router.get("/me", auth, (req, res) => {
+  res.json({ user: req.user });
+});
+
+export default router;
