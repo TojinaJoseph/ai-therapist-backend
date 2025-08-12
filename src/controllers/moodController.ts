@@ -55,7 +55,7 @@ export const getMood = async (req: Request, res: Response) => {
   try {
     const userId = new Types.ObjectId(req.user?.id);
 
-    // Find session by sessionId instead of _id
+    // Find mood by userId instead of _id
     const moodEntries = await Mood.find({ userId: userId });
     if (!moodEntries) {
       return res.status(404).json({ message: "Session not found" });

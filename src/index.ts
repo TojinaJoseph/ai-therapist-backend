@@ -25,7 +25,10 @@ app.use(express.json());
 // app.use(cors());
 app.use(
   cors({
-    origin: ["https://ai-therapist-frontend-chi.vercel.app"],
+    origin: [
+      "https://ai-therapist-frontend-chi.vercel.app",
+      "http://localhost:3000",
+    ],
     credentials: true,
   })
 );
