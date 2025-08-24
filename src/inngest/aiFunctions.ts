@@ -1,3 +1,5 @@
+import { connectDB } from "../utils/db";
+import { Activity } from "../models/Activity";
 import { Mood } from "../models/Mood";
 import { logger } from "../utils/logger";
 import { inngest } from "./index";
@@ -7,6 +9,24 @@ const genAI = new GoogleGenerativeAI(
   process.env.GEMINI_API_KEY || "AIzaSyAh6SFd502526KnCOAGj6rcWa4Eba3AHL0"
 );
 
+const typeMap: Record<string, string> = {
+  yoga: "meditation",
+  running: "exercise",
+  gym: "exercise",
+  walk: "walking",
+  stroll: "walking",
+  book: "reading",
+  read: "reading",
+  diary: "journaling",
+  write: "journaling",
+  counselling: "therapy",
+  counseling: "therapy",
+};
+
+function mapAIType(aiType: string) {
+  const normalized = aiType.toLowerCase().trim();
+  return typeMap[normalized] || "meditation"; // default fallback
+}
 // Function to handle chat message processing
 export const processChatMessage = inngest.createFunction(
   {
@@ -238,10 +258,10 @@ export const generateActivityRecommendations = inngest.createFunction(
       const userContext = await step.run("get-user-context", async () => {
         // Here you would typically fetch user's history from your database
         const recentMoods = await Mood.find({ userId: event.data.userId });
-
+        const activities = await Activity.find({ userId: event.data.userId });
         return {
           recentMoods: recentMoods,
-          completedActivities: event.data.completedActivities,
+          completedActivities: activities,
           preferences: event.data.preferences,
         };
       });
@@ -252,18 +272,34 @@ export const generateActivityRecommendations = inngest.createFunction(
         async () => {
           const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-          const prompt = `Based on the following user context, generate personalized activity recommendations:
+          const prompt = `Based on the following user context, generate 3 to 5 personalized activity recommendations:
         User Context: ${JSON.stringify(userContext)}
-        
-        Please provide:
-        1. 3-5 personalized activity recommendations
-        2. Reasoning for each recommendation
-        3. Expected benefits
-        4. Difficulty level
-        5. Estimated duration
-        
-        Format the response as a JSON object.`;
+        Output the result ONLY as a JSON array named "activities" where each object has exactly these keys:
 
+1. activityType (string) → one of: meditation, exercise, walking, reading, journaling, therapy.
+2. activity (string) → short activity title.
+3. reasoning (string) → reason for recommending this activity.
+4. estimatedDuration (number) → duration in minutes, numeric only (no text like "minutes").
+5. difficultyLevel (string) → Easy, Medium, or Hard.
+6. expectedBenefits (string) → benefits of the activity.
+
+Example output format:
+{
+  "activities": [
+    {
+      "activityType": "meditation",
+      "activity": "Body Scan Meditation",
+      "reasoning": "Based on your preferences...",
+      "estimatedDuration": 15,
+      "difficultyLevel": "Easy",
+      "expectedBenefits": "Reduced stress and anxiety..."
+    }
+  ]
+}
+
+Do NOT include any extra text, explanations, or code fences — only return valid JSON matching the example.
+      
+  `;
           const result = await model.generateContent(prompt);
 
           //  const analysisResult = await model.generateContent(analysisPrompt);
@@ -277,7 +313,26 @@ export const generateActivityRecommendations = inngest.createFunction(
 
       // Store the recommendations
       await step.run("store-recommendations", async () => {
-        // Here you would typically store the recommendations in your database
+        if (
+          !recommendations.activities ||
+          !Array.isArray(recommendations.activities)
+        ) {
+          throw new Error("AI did not return a valid 'activities' array");
+        }
+
+        const docs = recommendations.activities.map((rec: any) => ({
+          userId: event.data.userId,
+          type: mapAIType(rec.activityType),
+          name: rec.activity,
+          description: rec.reasoning,
+          duration: rec.estimatedDuration,
+          difficulty: rec.difficultyLevel,
+          feedback: rec.expectedBenefits,
+          timestamp: new Date(),
+          isRecommendation: true,
+        }));
+
+        await Activity.insertMany(docs);
         logger.info("Activity recommendations stored successfully");
         return recommendations;
       });

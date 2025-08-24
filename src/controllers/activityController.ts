@@ -11,6 +11,7 @@ export const logActivity = async (
   next: NextFunction
 ) => {
   try {
+    console.log("inside activity backend");
     const { type, name, description, duration, difficulty, feedback } =
       req.body;
     const userId = req.user?._id;

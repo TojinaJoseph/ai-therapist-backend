@@ -12,7 +12,8 @@ export const createMood = async (
   next: NextFunction
 ) => {
   try {
-    const { score, note, context, activities } = req.body;
+    console.log(req.body);
+    const { score, note, context, activities, priority } = req.body;
     const userId = req.user?._id; // From auth middleware
 
     if (!userId) {
@@ -39,6 +40,7 @@ export const createMood = async (
       note,
       context,
       activities,
+      priority,
       timestamp: String(mood.timestamp),
     });
 

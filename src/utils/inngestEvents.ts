@@ -54,7 +54,7 @@ export const sendTherapySessionEvent = async (sessionData: SessionData) => {
 
 // Add more event sending functions as needed
 export const sendMoodUpdateEvent = async (moodData: MoodData) => {
-  const { userId, mood, ...rest } = moodData;
+  const { userId, mood, priority, ...rest } = moodData;
   try {
     await inngest.send({
       name: "mood/updated",
@@ -64,6 +64,7 @@ export const sendMoodUpdateEvent = async (moodData: MoodData) => {
         timestamp: new Date().toISOString(),
         context: moodData.context,
         activities: moodData.activities,
+        preferences: priority,
         notes: moodData.notes,
         ...rest,
       },

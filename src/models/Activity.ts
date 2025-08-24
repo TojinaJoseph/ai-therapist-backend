@@ -7,6 +7,7 @@ export interface IActivity extends Document {
   description?: string;
   duration?: number;
   timestamp: Date;
+  isRecommendation?: boolean; // <-- NEW
 }
 
 const activitySchema = new Schema<IActivity>(
@@ -27,6 +28,7 @@ const activitySchema = new Schema<IActivity>(
         "reading",
         "journaling",
         "therapy",
+        "game",
       ],
     },
     name: {
@@ -44,6 +46,7 @@ const activitySchema = new Schema<IActivity>(
       type: Date,
       default: Date.now,
     },
+    isRecommendation: { type: Boolean, default: false }, // <-- NEW
   },
   {
     timestamps: true,

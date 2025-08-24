@@ -10,7 +10,10 @@ declare module "express-serve-static-core" {
     user?: IUser;
   }
 }
-
+interface JwtPayload {
+  userId: string;
+  // add other properties if needed
+}
 export const auth = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const token = req.header("Authorization")?.replace("Bearer ", "");
@@ -19,10 +22,6 @@ export const auth = async (req: Request, res: Response, next: NextFunction) => {
       return res.status(401).json({ message: "Authentication required" });
     }
 
-    interface JwtPayload {
-      userId: string;
-      // add other properties if needed
-    }
     const decoded = jwt.verify(
       token,
       process.env.JWT_SECRET || "your-secret-key"
